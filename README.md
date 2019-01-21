@@ -35,10 +35,15 @@ See requirements.txt
 
 Make sure to enter valid mail server credentials in the config.py file otherwise you cannot send mail :)
 
+# Default login
+
+The default credentials are admin/admin
+
 # Docker easy run 
 
 Download and run:
 
 ```docker-compose up --build```
 
-Note that this uses the flask built-in webserver so not suitable for production environments
+Note that this uses the flask built-in webserver so not suitable for production environments.
+The application will run on port 5000 by default.
