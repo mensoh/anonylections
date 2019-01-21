@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<br/>
+<div class="row">
+	<div class="col-sm">
+		<div class="card" style="width: 100%;">
+			<h3 class="card-header">Thank you for voting</h3>
+			<div class="card-body">
+				<p>If you want to be able to verify your vote, you can write down the confirmation code below. When the voting results are shown, you can look at the individual votes and their confirmation codes to see if your vote is indeed accounted for.</p><br/>
+				<h5>Your confirmation code is: <strong>{{confirmationcode}}</strong></h5>
+				{% if resulturl %}
+				You can view the results by clicking <a href="{{ url_for('result', token=resulturl)}}">here</a>. Be sure to bookmark that link if you want to return to it later. 
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}
+
+

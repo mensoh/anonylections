@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% include 'menu.html' %}
+{% block content %}
+<br/>
+<div class="row">
+	{% include 'electiondetails.html' %}
+	{% include 'choice.html' %}
+</div>
+
+		<script>
+			$(document).ready(function () {
+			
+			{% include 'js/election.js' %}
+			{% include 'js/charts.js' %}
+			{% include 'js/searchtable.js' %}
+
+			});
+		</script>
+
+{% endblock %}
+
+

@@ -1,0 +1,159 @@
+
+{% block content %}
+<br/>
+	<div class="col-sm">
+		<div class="card" style="width: 100%;">
+			<h3 class="card-header">Choices</h3>
+			<div class="card-body">
+				<h5 class="card-title">Choices:</h5>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Option</th>
+							<th>Votes</th>
+							{% if election.ownedby.username == current_user.username and not result: %}
+							<th>Action</th>
+							{% endif %}
+						</tr>
+					</thead>
+					<tbody>
+						{% for choice in choices %}					
+						<tr>
+							<th scope="row">{{ loop.index }}</th>
+							<td>{{ choice.choice }}</td>
+							<td>{{ choice.votes|length }} </td>
+							{% if election.ownedby.username == current_user.username and not result: %}
+							<td>		
+								<a class="btn btn-primary btn-sm" data-toggle="modal" data-href="{{ url_for('choice', eid=election.id, cid=choice.id, action='delete')|safe }}" data-choice="{{choice.choice}}" data-target="#deleteModal" href="#" id="delete{{loop.index}}"><span class="oi oi-trash" title="Delete" aria-hidden="true"></span></a>
+							</td>
+							{% endif %}
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				{% if election.ownedby.username == current_user.username and not result: %}
+				<form action="/election" method="post">
+						<input type="hidden" name="action" value="AddChoice">
+						<input type="hidden" name="id" value="{{ election.id }}">
+						<input type="text" name="choice" class="form-control"><br/>
+					 	<input type="submit" class="btn btn-primary form-control" value="Add Choice">
+				</form>
+				{% endif %}
+				<br/>
+				<h5 class="card-title">Charts:</h5>
+				<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#barModal"><span class="oi oi-bar-chart" title="Bar Chart" aria-hidden="true"></span></button>
+				<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#pieModal"><span class="oi oi-pie-chart" title="Pie Chart" aria-hidden="true"></span></button>
+				<br/><br/>
+				<h5 class="card-title">Individual results:</h5>
+				<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#individualResults">Individual Results</button>
+			</div>
+		</div>
+	</div>
+
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="barModal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Results (bar chart)</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+		<canvas id="barChart"></canvas>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="individualResults">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Individual results:</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+      	<div class="form-group pull-right">
+    		Total votes: {{votes}}<input type="text" class="search form-control" placeholder="Confirmation code">
+		</div>
+      	<table class="table results">
+			<thead>
+				<tr>
+					<th>Choice</th>
+					<th>Confirmation Code</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for r in results %}					
+				<tr>
+					<td>{{ r.label.choice }}</td>
+					<td>{{ r.confirmcode }} </td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="pieModal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Results (pie chart)</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+		<canvas id="pieChart"></canvas>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if election.ownedby.username == current_user.username and not result: %}
+
+<div class="modal fade" tabindex="-1" role="dialog" id="deleteModal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete choice:</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	
+      </div>
+      <div class="modal-footer">
+      	<a class="btn btn-primary" id="deleteBtn" href="#">Delete</a>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+{% endblock %}
+
+

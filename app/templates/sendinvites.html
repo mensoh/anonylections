@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% include 'menu.html' %}
+{% block content %}
+	<div class="col-sm">
+		<div class="card" style="width: 100%;">
+			<h3 class="card-header">Send invites</h3>
+			<div class="card-body">
+				<h5 class="card-title">Send invites:</h5>
+				<form action="/sendinvites" method="post">
+				<input type="hidden" name="action" value="send">
+				<input type="hidden" name="eid" value="{{ election.id }}">
+				Sender:
+				<input type="text" class="form-control" name="sender" value="Your Name <your@e-mail.com>"><br/>
+				<hr/>
+				Subject:
+				<input type="text" class="form-control" name="subject" value="Vote for the {{ election.name }} elections."><br/>
+				<hr/>
+				Compose your message below. Use !link! where you want the link to appear, as in the example shown:
+				<textarea name="message" class="form-control" rows="10">
+Hello,
+
+You are invited to participate in the {{ election.name}} anonymous elections. You can vote by visiting this link:
+!link!
+
+Further instructions will follow on the site.
+
+Thank you,
+
+{{current_user.username}}
+
+				</textarea>
+				
+
+				<hr/>
+				Paste the e-mail addresses in the area below and make sure that it is one e-mail address per line (remove examples).
+
+				
+
+						<textarea name="addresses" class="form-control" rows="15">
+one@address.com
+per@line.org
+like@this.net
+						</textarea><br/>
+					 	<input type="submit" class="btn btn-primary form-control" value="Send Invites">
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+

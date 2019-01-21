@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% include 'menu.html' %}
+{% block content %}
+<br/>
+<div class="row">
+	<div class="col-sm">
+		<div class="card" style="width: 100%;">
+			<h3 class="card-header">Users:</h3>
+			<div class="card-body">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Username:</th>
+							<th>E-mail:</th>
+							<th>Elections:</th>
+							<th>Admin:</th>
+							<th>Delete</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for user in users %}					
+						<tr>
+							<td>{{ user.username }}</td>
+							<td>{{ user.email }}</td>
+							<td>{{ user.electioncount() }}</td>
+							<td>{% if user.admin==1 %}Yes{% else %}No{% endif %}</td>
+							<td><a class="btn btn-primary btn-sm" id="userModal{{loop.index}}" href="{{ url_for('admin')}}" data-toggle="modal" data-target="#userModal">Edit</a> <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#deleteModal" data-user="{{user.username}}" data-href="{{ url_for('user', id=user.id)}}">Delete</button></td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>				
+			</div>
+		</div>
+	</div>
+</div>
+<br/>
+{% if current_user.is_admin() %}
+<p><a class="btn btn-primary btn-lg" id="addUserBtn" data-toggle="modal" data-target="#addUserModal" href="#">Add User</a></p>
+{% endif %}
+
+<div class="modal fade" tabindex="-1" role="dialog" id="userModal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit user:</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<form method="post" action="/user" id="updateUserForm">
+      		<input type="hidden" id="userid" name="userid" value="">
+      		<h5>Username:</h5>
+      		<p><input type="text" id="username" name="username" class="form-control"></p>
+      		<h5>E-mail address:</h5>
+      		<p><input type="text" id="email" name="email" class="form-control"></p>
+      		{% if current_user.is_admin() %}
+      		<h5>Administrator</h5>
+      		<p><input type="checkbox" id="admin" name="admin">
+      		{% endif %}
+      		<hr/>
+      		Leave blank if not changing password
+      		<h5>Password:</h5>
+      		<input type="text" id="password" name="password" class="form-control">
+      		<h5>Repeat Password:</h5>
+      		<input type="text" id="passwordconfirm" name="passwordconfirm" class="form-control">
+
+      	</form>
+      </div>
+      <div class="modal-footer">
+      	<button type="button" class="btn btn-primary" data-dismiss="modal" id="updateUser">Save</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if current_user.is_admin() %}
+<div class="modal fade" tabindex="-1" role="dialog" id="addUserModal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add user:</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<form method="post" action="/user" id="addUserForm">
+      		<h5>Username:</h5>
+      		<p><input type="text" id="username" name="username" class="form-control"></p>
+      		<h5>E-mail address:</h5>
+      		<p><input type="text" id="email" name="email" class="form-control"></p>
+      		<h5>Administrator</h5>
+      		<p><input type="checkbox" id="admin" name="admin">
+      		<h5>Password:</h5>
+      		<input type="text" id="password" name="password" class="form-control">
+      		<h5>Repeat Password:</h5>
+      		<input type="text" id="passwordconfirm" name="passwordconfirm" class="form-control">
+      	</form>
+      </div>
+      <div class="modal-footer">
+      	<button type="button" class="btn btn-primary" data-dismiss="modal" id="addUser">Save</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="modal fade" tabindex="-1" role="dialog" id="deleteModal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete user:</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	
+      </div>
+      <div class="modal-footer">
+      	<a class="btn btn-primary" id="deleteBtn" href="#">Delete</a>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+	$(document).ready(function () {
+
+		$('#deleteModal').on('show.bs.modal', function(e) {
+			var user = $(e.relatedTarget).data('user');
+			var href = $(e.relatedTarget).data('href')
+			$("#deleteModal .modal-body").html('Are you sure you want to delete user <strong>' + user + '</strong>?');
+			$("#deleteBtn").attr('href', href);
+			
+		});		
+
+	{% for user in users %}
+
+		$('#userModal{{loop.index}}').click(function() {
+			$('#userid').val('{{user.id}}');
+			$('#username').val('{{user.username}}');
+			$('#email').val('{{user.email}}');
+			{% if current_user.is_admin() %}
+			$('#admin').prop('checked', {% if user.admin==1 %}true{% else %}false{% endif %});
+			{% endif %}
+		});	
+
+	{% endfor %}
+
+		{% if current_user.is_admin() %}
+		$('#addUser').click(function(){
+			$('#addUserForm').submit();
+		});
+		{% endif %}
+		$('#updateUser').click(function(){
+			$('#updateUserForm').submit();
+		});
+
+	});
+</script>
+
+{% endblock %}
+
+

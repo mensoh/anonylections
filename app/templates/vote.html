@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br/>
+<div class="row">
+	<div class="col-sm">
+		<div class="card" style="width: 100%;">
+			<h3 class="card-header">Election details</h3>
+			<div class="card-body">
+				<h5 class="card-title">Title:</h5>
+				{{ election.name }}<br/><br/>
+				<h5 class="card-title">Description:</h5>
+				{{ election.description }}<br/><br/>
+				{% for choice in choices %}											
+				<a class="btn btn-primary btn-sm" data-toggle="modal" data-href="{{ url_for('vote', eid=election.id, cid=choice.id, action='vote', token=token)}}" data-target="#voteModal" data-choice="{{choice.choice}}" href="#">{{choice.choice}}</a>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="voteModal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cast your vote:</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	You are about to vote for x<br/>
+      	This vote is final and cannot be changed.</br>
+      	Are you sure this is what you want?
+      </div>
+      <div class="modal-footer">
+      	<a class="btn btn-primary" id="voteBtn" href="#">Yes, vote!</a>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+		<script>
+			$(document).ready(function () {
+			
+				{% include 'js/vote.js' %}
+
+			});
+		</script>
+
+{% endblock %}
+
+

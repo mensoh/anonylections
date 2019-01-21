@@ -1,0 +1,17 @@
+version: '2.1'
+
+services:
+  anonylections:
+    container_name: anonylections
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_APP: app/anonylections.py
+    volumes:
+      - ./config.py:/home/user/config.py
+      - ./app/anonylections.py:/home/user/app/anonylections.py
+      - ./app/anonylections.db:/home/user/app/anonylections.db
+      - ./app:/home/user/app
+    command: ["flask", "run", "-h::", "--reload", "--debugger", "--with-threads"]
+

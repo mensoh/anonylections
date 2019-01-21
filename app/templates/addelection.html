@@ -1,0 +1,21 @@
+
+{% block content %}
+<br/>
+	<div class="col-sm">
+		<div class="card" style="width: 100%;">
+			<h3 class="card-header">Add election</h3>
+			<div class="card-body">
+				<h5 class="card-title">Enter details:</h5>
+			    <form action="" method="post">
+			    {{ form.hidden_tag() }}
+			    {{ form.electionname.label }} <br/>
+			    {{ form.electionname(size=32)}}<br/>
+			    {{ form.description.label }} <br/>
+			    {{ form.description(size=32)}}<br/></br>
+			    {{ form.submit() }}
+			    </form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

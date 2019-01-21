@@ -1,0 +1,136 @@
+
+
+{% block content %}
+
+	<div class="col-sm">
+		<div class="card" style="width: 100%;">
+			<h3 class="card-header">Election  
+				{% if not result: %}
+					<a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#electionModal"><span class="oi oi-pencil" title="Edit" aria-hidden="true"></span></a>
+					<a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#deleteElectionModal"><span class="oi oi-trash" title="Delete" aria-hidden="true"></span></a>
+				{% endif %}
+				</h3>
+			<div class="card-body">
+				<h5 class="card-title">Title:</h5>
+				{{ election.name }}<br/><br/>
+				<h5 class="card-title">Description:</h5>
+				{{ election.description }}<br/><br/>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Status</th>
+							<th>Sent Invites:</th>
+							<th>Received Votes:</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								{% if election.status == 0 %}
+									Closed
+								{% else %}
+									Open
+								{% endif %}
+							</td>
+							<td>{{ invites }}</td>
+							<td>{{ votes }}</td>
+						</tr>
+					</tbody>
+				</table>
+				{% if election.ownedby.username == current_user.username and not result: %}
+					{% if election.status == 0 %}
+						<btn class="btn btn-primary btn-sm" data-toggle="modal" data-target="#electionStatusModal" data-href="{{ url_for('election', id=election.id, changestatus='open')|safe}}" data-status="open">Open <span class="oi oi-lock-unlocked" title="open" aria-hidden="true"></span></btn>
+					{% else %}
+						<btn class="btn btn-primary btn-sm" data-toggle="modal" data-target="#electionStatusModal" data-href="{{ url_for('election', id=election.id, changestatus='close')|safe}}" data-status="closed">Close <span class="oi oi-lock-locked" title="open" aria-hidden="true"></span></btn>
+					{% endif %}
+					your elections.<br/><br/>
+					
+					<h5 class="card-title">Send Invites</h5>
+						<a class="btn btn-primary btn-sm" href="{{ url_for('sendinvites', id=election.id)}}">Send Invites</a><br/><br/>
+					
+					<h5 class="card-title">Result URL</h5>
+					<p>Share <a href="{{ url_for('result', token=election.resulturl)}}">this link</a> to provide insight into the election results.<br/>
+					<form id="shareResultForm" action="/election" method="POST">
+					<input type="hidden" name="id" value="{{election.id}}">
+					<input type="hidden" name="action" value="shareAfterVote">
+					<input type="hidden" name="shareAfterVote" value="{{ election.shareurl}}">
+					<input type="checkbox" id="shareResult" name="shareResult" {% if election.shareurl==1 %} checked {% endif %}> Show results link to voters immediately after voting.
+					</form>
+					<br/>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+
+{% if election.ownedby.username == current_user.username and not result: %}
+<div class="modal fade" tabindex="-1" role="dialog" id="electionModal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit election:</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<form method="post" action="/update" id="electionform">
+      		<input type="hidden" name="eid" value="{{election.id}}"	     
+	      	<p><strong>Title:</strong></p>
+	      	<p><input type="text" class="form-control" form="electionform" name="name" id="name" value="{{ election.name}}"></p>
+	      	<p><strong>Description:</strong></p>
+	      	<p><input type="text" class="form-control" form="electionform" name="desc" id="desc" value="{{ election.description }}"></p>
+      	</form>
+      </div>
+      <div class="modal-footer">
+      	<button type="button" class="btn btn-primary" data-dismiss="modal" id="updateElection">Save</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="electionStatusModal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">status</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	
+      </div>
+      <div class="modal-footer">
+      	<a class="btn btn-primary" id="electionStatusBtn" href="#">Change</a>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="deleteElectionModal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete election {{ election.name }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      Are you sure you want to delete this election? This cannot be undone.
+      </div>
+      <div class="modal-footer">
+      	<a class="btn btn-primary" id="electionStatusBtn" href="{{ url_for('election', id=election.id, delete=1)}}">Delete</a>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+
